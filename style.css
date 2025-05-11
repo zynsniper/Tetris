@@ -12,6 +12,6 @@ body{
 }
 
 #tetris{
-    background-color: rgb(77, 76, 78);
-    box-shadow: 0 0 10px 0 lightgray;
+    background-color: rgb(244, 243, 245);
+    box-shadow: 0 0 10px 0 rgb(109, 108, 108);
 }
