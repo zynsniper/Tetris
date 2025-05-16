@@ -29,10 +29,9 @@ A simple yet fully functional Tetris clone built using **HTML5**, **CSS**, and *
 
 ## ▶️ How to Play
 
-1. Open the `index.html` file in any modern web browser.
+1. Open the `index.html` file in any web browser.
 2. Use the keyboard controls to move and rotate pieces.
 3. Clear lines to earn points.
-4. The game ends when pieces stack to the top.
 
 ---
 
