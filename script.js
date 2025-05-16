@@ -62,6 +62,7 @@ const SHAPES = [
 ]
 
 const COLOURS = [
+    "#fff",
     "#0441ae",
     "#72cb3b",
     "#ffd504",
@@ -78,11 +79,11 @@ const COLOURS = [
 function generateRandomPiece(){
     let random = Math.floor(Math.random() * SHAPES.length);
     let piece = SHAPES[random];
-    let pieceColour = COLOURS[random];
+    let colourIndex = random + 1;
     let x = 4;
     let y = 0;
 
-    return {piece, x, y, pieceColour};
+    return {piece, colourIndex, x, y};
 }
 
 function renderPiece(){
@@ -91,7 +92,7 @@ function renderPiece(){
     for(let i = 0; i < piece.length; i++){
         for(let j = 0; j < piece[i].length; j++){
             if(piece[i][j] == 1){
-                ctx.fillStyle = pieceObj.pieceColour;
+                ctx.fillStyle = COLOURS[pieceObj.colourIndex];
                 ctx.fillRect(pieceObj.x + j, pieceObj.y + i, 1, 1);
             }
         }
@@ -103,7 +104,29 @@ function renderPiece(){
 //======================================================================//
 
 function moveDown(){
-    pieceObj.y += 1;
+    if(!collision(pieceObj.x, pieceObj.y + 1)){
+        pieceObj.y += 1;
+    }
+    else{
+        let piece = pieceObj.piece;
+
+        for(let i = 0; i < piece.length; i++){
+            for(let j = 0; j < piece[i].length; j++){
+                if(piece[i][j] == 1){
+                    let p = pieceObj.x + j;
+                    let q = pieceObj.y + i;
+                    grid[q][p] = pieceObj.colourIndex;
+                }
+            }
+        }
+
+        if(pieceObj.y == 0){
+            alert("Game over!");
+            grid = generateGrid();
+            score = 0;
+        }
+        pieceObj = null;
+    }
     renderGrid();
 }
 
@@ -129,7 +152,7 @@ function rotate(){
         rotatedPiece[i] = rotatedPiece[i].reverse();
     }
 
-    if(!collision(pieceObj.x, pieceObj.y)){
+    if(!collision(pieceObj.x, pieceObj.y, rotatedPiece)){
         pieceObj.piece = rotatedPiece;
     }
 
@@ -137,31 +160,39 @@ function rotate(){
 }
 
 function moveLeft(){
-    pieceObj.x -= 1;
+    if(!collision(pieceObj.x - 1, pieceObj.y))
+        pieceObj.x -= 1;
     renderGrid();
 }
 
 function moveRight(){
-    pieceObj.x += 1;
+    if(!collision(pieceObj.x + 1, pieceObj.y))
+        pieceObj.x += 1;
     renderGrid();
 }
 
-function collision(x, y){
-    let piece = pieceObj.piece
+function collision(x, y, rotatedPiece){
+    let piece = rotatedPiece || pieceObj.piece;
 
     for(let i = 0; i < piece.length; i++){
         for(let j = 0; j < piece[i].length; j++){
-            if(piece[i][j] != 1) continue;
-            let p = x + j;
-            let q = y + i;
+            if(piece[i][j] == 1){
+                let p = x + j;
+                let q = y + i;
 
-            if(p < 0 || p >= Cols || q < 0 || q >= Rows || grid[q][p] > 0){
-                return true;
+                if(p < 0 || p >= Cols || q < 0 || q >= Rows){
+                    return true; 
+                }
+
+                if(grid[q][p] > 0){
+                    return true; 
+                }
             }
         }
     }
     return false;
 }
+
 
 //======================================================================//
 //GAME/CANVAS DISPLAY FUNCTIONS
@@ -181,7 +212,7 @@ function generateGrid(){
 function renderGrid(){
     for(let i = 0; i < grid.length; i++){
         for(let j = 0; j < grid[i].length; j++){
-            ctx.fillStyle = "#ffffff";
+            ctx.fillStyle = COLOURS[grid[i][j]];
             ctx.fillRect(j,i,1,1);
         }
     }
@@ -204,7 +235,6 @@ function checkGrid(){
             count++;
             grid.splice(i,1);
             grid.unshift([0,0,0,0,0,0,0,0,0,0]);
-            i--;
         }
     }
 
@@ -221,11 +251,9 @@ function checkGrid(){
         case 4:
             score += 800;
             break;
-        default:
     }
 
     scoreboard.innerHTML = "Score: " + score;
-    count = 0;
 }
 
 //======================================================================//
