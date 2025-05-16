@@ -1,9 +1,9 @@
 const Rows = 20;
 const Cols = 10;
-ctx.scale(30,30);
 
 let canvas = document.querySelector("#background");
 let ctx = canvas.getContext("2d");
+ctx.scale(30,30);
 let scoreboard = document.querySelector("h2");
 let grid = generateGrid();
 let score = 0;
@@ -108,8 +108,32 @@ function moveDown(){
 }
 
 function rotate(){
-    pieceObj.y += 1;
-    renderGrid();
+    let rotatedPiece = [];
+    let piece = pieceObj.piece;
+
+    for(let i = 0; i < piece.length; i++){
+        rotatedPiece.push([]);
+
+        for(let j = 0; j < piece[i].length; j++){
+            rotatedPiece[i].push(0);
+        }
+    }
+
+    for(let i = 0; i < piece.length; i++){
+        for(let j = 0; j < piece[i].length; j++){
+            rotatedPiece[i][j] = piece[j][i];
+        }
+    }
+
+    for(let i = 0; i < rotatedPiece.length; i++){
+        rotatedPiece[i] = rotatedPiece[i].reverse();
+    }
+
+    if(!collision(pieceObj.x, pieceObj.y)){
+        pieceObj.piece = rotatedPiece;
+    }
+
+    renderGrid()
 }
 
 function moveLeft(){
