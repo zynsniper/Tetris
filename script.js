@@ -20,19 +20,19 @@ const SHAPES = [
         [1,1]
     ],
     [ //S shape
-        [0,0,0],
         [0,1,1],
-        [1,1,0]
+        [1,1,0],
+        [0,0,0]
     ],
     [ //Z shape
-        [0,0,0],
         [1,1,0],
-        [0,1,1]
+        [0,1,1],
+        [0,0,0]
     ],
     [ //T shape
-        [0,0,0],
         [1,1,1],
-        [0,1,0]
+        [0,1,0],
+        [0,0,0]
     ]
 ]
 
@@ -49,9 +49,11 @@ const COLOURS = [
 const Rows = 20;
 const Cols = 10;
 
-let canvas = document.querySelector("#tetris");
+let canvas = document.querySelector("#background");
 let ctx = canvas.getContext("2d");
 ctx.scale(30,30);
+let grid = generateGrid();
+
 
 var pieceObj = generateRandomPiece();
 console.log(pieceObj);
@@ -64,16 +66,51 @@ function generateRandomPiece(){
 
     return {piece, x, y, pieceColour};
 }
-renderPiece();
+
 function renderPiece(){
     let piece = pieceObj.piece;
-    ctx.fillStyle = pieceObj.pieceColour;
 
     for(let i = 0; i < piece.length; i++){
         for(let j = 0; j < piece[i].length; j++){
             if(piece[i][j] == 1){
-                ctx.fillRect(j, i, 1, 1);
+                ctx.fillStyle = pieceObj.pieceColour;
+                ctx.fillRect(pieceObj.x + j, pieceObj.y + i, 1, 1);
             }
         }
     }
+}
+
+setInterval(newGameState, 500);
+function newGameState(){
+    if(pieceObj == null){
+        pieceObj = generateRandomPiece();
+        renderPiece();
+    }
+    moveDown();
+}
+
+function moveDown(){
+    pieceObj.y += 1;
+    renderGrid();
+}
+
+function generateGrid(){
+    let grid = [];
+    for(let i = 0; i < Rows; i++){
+        grid.push([]);
+        for(let j = 0; j < Cols; j++){
+            grid[i].push(0);
+        }
+    }
+    return grid;
+}
+
+function renderGrid(){
+    for(let i = 0; i < grid.length; i++){
+        for(let j = 0; j < grid[i].length; j++){
+            ctx.fillStyle = "#ffffff";
+            ctx.fillRect(j,i,1,1);
+        }
+    }
+    renderPiece();
 }
